@@ -4,43 +4,218 @@ info:
   version: 1.0.0
   description: API documentation for easyapp
 paths:
-  /api/hello/:
-    get:
-      operationId: api_hello_retrieve
-      description: Get a hello world message
+  /api/auth/register:
+    post:
+      operationId: auth_register
       tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+        - auth
+      description: Register a new member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
-        '200':
+        '201':
+          description: Member created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
-          description: ''
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/auth/login:
+    post:
+      operationId: auth_login
+      tags:
+        - auth
+      description: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/profile:
+    get:
+      operationId: profile_retrieve
+      tags:
+        - profile
+      description: Get current member profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '401':
+          description: Unauthorized
+    patch:
+      operationId: profile_update
+      tags:
+        - profile
+      description: Update current member profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: Updated member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+  /api/profile/change-password:
+    post:
+      operationId: profile_change_password
+      tags:
+        - profile
+      description: Change current member password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePasswordResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    Message:
+    Member:
       type: object
       properties:
-        message:
+        id:
+          type: integer
+        email:
           type: string
-          maxLength: 200
-        timestamp:
+          format: email
+        name:
           type: string
-          format: date-time
-          readOnly: true
       required:
-      - message
-      - timestamp
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
+        - id
+        - email
+        - name
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          maxLength: 255
+        password:
+          type: string
+          minLength: 6
+      required:
+        - email
+        - name
+        - password
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        member:
+          $ref: '#/components/schemas/Member'
+      required:
+        - token
+        - member
+    ProfileUpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          maxLength: 255
+    ChangePasswordRequest:
+      type: object
+      properties:
+        current_password:
+          type: string
+        new_password:
+          type: string
+      required:
+        - current_password
+        - new_password
+    ChangePasswordResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+        - detail
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+        - detail
