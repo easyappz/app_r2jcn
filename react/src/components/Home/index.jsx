@@ -1,10 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
-/**
- * Для ИИ: Это заглушка. Обнови этот компонент. Здесь должен быть начальный экран приложения.
- */
-export const Home = () => {
+export default function Home() {
   return (
-    <div>This is home page</div>
+    <section className="hero" data-easytag="id1-react/src/components/Home/index.jsx">
+      <h1>Минималистичный аккаунт</h1>
+      <p>Зарегистрируйтесь, авторизуйтесь и управляйте своим профилем — просто и красиво.</p>
+      <div style={{ marginTop: 16 }}>
+        <Link className="btn" to="/register">Создать аккаунт</Link>
+      </div>
+    </section>
   );
-};
+}
