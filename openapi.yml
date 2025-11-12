@@ -3,6 +3,8 @@ info:
   title: Easyapp API
   version: 1.0.0
   description: API documentation for easyapp
+servers:
+  - url: /
 paths:
   /api/auth/register:
     post:
@@ -71,6 +73,10 @@ paths:
                 $ref: '#/components/schemas/Member'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     patch:
       operationId: profile_update
       tags:
@@ -99,6 +105,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/profile/change-password:
     post:
       operationId: profile_change_password
@@ -128,6 +138,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   securitySchemes:
     bearerAuth:
