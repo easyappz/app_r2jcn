@@ -9,6 +9,7 @@ from .auth import create_jwt
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []  # Ensure no JWT check for public endpoint
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -29,6 +30,7 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []  # Ensure no JWT check for public endpoint
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
